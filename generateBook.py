@@ -43,4 +43,5 @@ while not items == []:
 		print(items)
 		sys.exit(0)
 outputHandle.close()
-os.system("pandoc -raw_attribute -s -f markdown \"" + rootFolder + os.sep + "interior.md\" -t docx -o \"" + rootFolder + os.sep + "interior.docx\"")
+os.system("dir")
+os.system("pandoc -raw_attribute -s --reference-doc=\"" + "" + "reference.docx\" -f markdown \"" + rootFolder + os.sep + "interior.md\" -t docx -o \"" + rootFolder + os.sep + "interior.docx\"")
