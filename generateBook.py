@@ -108,11 +108,11 @@ if not audioFiles == []:
 
 			paddedDuration = math.ceil(outputWav.duration_seconds)
 			padLength = int(round((float(paddedDuration) - outputWav.duration_seconds) * float(1000)))
-			print(audioFile[:-4] + ": " + str(pageAudio.duration_seconds) + " long, padded to " + str(paddedDuration) + " with " + str(padLength) + " milliseconds.")
+			#print(audioFile[:-4] + ": " + str(pageAudio.duration_seconds) + " long, padded to " + str(paddedDuration) + " with " + str(padLength) + " milliseconds.")
 			outputWav = outputWav + pydub.AudioSegment.silent(duration=padLength)
 			if not transitionAudio == None:
 				outputWav = outputWav + transitionAudio
-			print(outputWav.duration_seconds)
+			#print(outputWav.duration_seconds)
 
 			ffmpegCommand = ffmpegCommand + " -loop 1 -t " + str(math.ceil(pageAudio.duration_seconds) + transitionDuration) + " -i \"temp\\" + str(itemCount) + ".png\""
 
@@ -120,8 +120,7 @@ if not audioFiles == []:
 	outputWav.export("temp" + os.sep + "audio.wav", format="wav")
 	ffmpegCommand = ffmpegCommand + " -i temp" + os.sep + "audio.wav -filter_complex \"concat=n=" + str(itemCount) + "\" -shortest -c:v libx264 -pix_fmt yuv420p -c:a aac \"" + rootFolder + os.sep + "slideshow.mp4\""
 	print(ffmpegCommand)
-	#os.system(ffmpegCommand)
-
+	os.system(ffmpegCommand)
 	shutil.rmtree("temp")
 
 #outputHandle = open(rootFolder + os.sep + "interior.md","w")
