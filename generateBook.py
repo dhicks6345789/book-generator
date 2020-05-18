@@ -28,7 +28,12 @@ blankPages = 0
 textFiles = []
 imageFiles = []
 audioFiles = []
+audioTransition = None
 items = sorted(os.listdir(contentFolder))
+if "transition.wav" in items:
+	items.remove("transition.wav")
+	audioTransition = "transition.wav"
+
 # Sort through the items in the input folder, creating (ordered) lists as we go of media to include in different versions of this book.
 while not items == []:
 	pageItem = "Page " + str(page)
