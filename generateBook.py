@@ -37,7 +37,6 @@ if "transition.wav" in items:
 # Sort through the items in the input folder, creating (ordered) lists as we go of media to include in different versions of this book.
 while not items == []:
 	pageItem = "Page " + str(page)
-	print("Processing " + pageItem)
 	pageFound = False
 	if pageItem + ".txt" in items:
 		items.remove(pageItem + ".txt")
@@ -64,7 +63,9 @@ while not items == []:
 		print(items)
 		sys.exit(0)
 
-
+# Generate video-with-audio version.
+for audioFile in audioFiles:
+	print(audioFile[:-3])
 
 #outputHandle = open(rootFolder + os.sep + "interior.md","w")
 #outputHandle.close()
