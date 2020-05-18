@@ -31,7 +31,8 @@ audioFiles = []
 items = sorted(os.listdir(contentFolder))
 # Sort through the items in the input folder, creating (ordered) lists as we go of media to include in different versions of this book.
 while not items == []:
-	pageItem = "Processing page " + str(page)
+	pageItem = "Page " + str(page)
+	print("Processing " + pageItem)
 	pageFound = False
 	if pageItem + ".txt" in items:
 		items.remove(pageItem + ".txt")
