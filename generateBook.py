@@ -65,7 +65,8 @@ while not items == []:
 
 # Generate video-with-audio version.
 for audioFile in audioFiles:
-	print(audioFile[:-3])
+	if audioFile[:-4] + ".png" in imageFiles:
+		print(audioFile)
 
 #outputHandle = open(rootFolder + os.sep + "interior.md","w")
 #outputHandle.close()
