@@ -100,7 +100,7 @@ if not audioFiles == []:
 			inputImage.close()
 			pageImage.close()
 
-			pageAudio = pydub.AudioSegment.from_wav(contentFolder + os.sep + audioFile[:-4])
+			pageAudio = pydub.AudioSegment.from_wav(contentFolder + os.sep + audioFile)
 			if outputWav == None:
 				outputWav = pageAudio
 			else:
