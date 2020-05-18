@@ -3,9 +3,20 @@
 # Standard libraries.
 import os
 import sys
+import math
+import shutil
+
+# PIL - the Python Image Library, used for bitmap image manipulation.
+import PIL
+import PIL.Image
+
+# PyDub - Python audio file manipulation library.
+import pydub
+
+
 
 # GenerateBook: Converts a collection of text, image and audio files into a variety of formats, including print-ready PDFs suitible for
-# submitting to print-on-demand services (e.g. Lulu.com). Depends on Pandoc, WeasyPrint, ffmpeg.
+# submitting to print-on-demand services (e.g. Lulu.com). Depends on Pandoc, WeasyPrint, ffmpeg, PIL, pydub.
 
 def readFile(theFilename):
 	inputHandle = open(theFilename)
@@ -63,10 +74,55 @@ while not items == []:
 		print(items)
 		sys.exit(0)
 
-# Generate video-with-audio version.
-for audioFile in audioFiles:
-	if audioFile[:-4] + ".png" in imageFiles:
-		print(audioFile)
+# Generate video-with-audio version. Define the resolution, in pixels, of image to map to each page.
+pageImageWidth = 512
+pageImageHeight = 512
+if not audioFiles == []:
+	os.makedirs("temp", exist_ok=True)
+	transitionAudio = None
+	transitionDuration = 0
+	if not audioTransition == None:
+		transitionAudio = pydub.AudioSegment.from_wav(contentFolder + os.sep + "transition.wav")
+		transitionDuration = math.ceil(transitionAudio.duration_seconds)
+		padLength = int(round((float(transitionDuration) - transitionAudio.duration_seconds) * float(1000)))
+		transitionAudio = transitionAudio + pydub.AudioSegment.silent(duration=padLength)
+	itemCount = 0
+	outputWav = None
+	ffmpegCommand = "ffmpeg -y"
+	for audioFile in audioFiles:
+		if audioFile[:-4] + ".png" in imageFiles:
+			itemCount = itemCount + 1
+			
+			pageImage = PIL.Image.new("RGB", (pageImageWidth, pageImageHeight), "white")
+			inputImage = PIL.Image.open(contentFolder + os.sep + audioFile[:-4] + ".png")
+			pageImage.paste(inputImage.resize((pageImageWidth,pageImageHeight)), box=(0,0,pageImageWidth,pageImageHeight))
+			pageImage.save("temp" + os.sep + str(itemCount) + ".png")
+			inputImage.close()
+			pageImage.close()
+
+			pageAudio = pydub.AudioSegment.from_wav(contentFolder + os.sep + audioFile[:-4])
+			if outputWav == None:
+				outputWav = pageAudio
+			else:
+				outputWav = outputWav + pageAudio
+
+			paddedDuration = math.ceil(outputWav.duration_seconds)
+			padLength = int(round((float(paddedDuration) - outputWav.duration_seconds) * float(1000)))
+			print(audioFile[:-4] + ": " + str(pageAudio.duration_seconds) + " long, padded to " + str(paddedDuration) + " with " + str(padLength) + " milliseconds.")
+			outputWav = outputWav + pydub.AudioSegment.silent(duration=padLength)
+			if not transitionAudio == None:
+				outputWav = outputWav + transitionAudio
+			print(outputWav.duration_seconds)
+
+			ffmpegCommand = ffmpegCommand + " -loop 1 -t " + str(math.ceil(pageAudio.duration_seconds) + transitionDuration) + " -i \"temp\\" + str(itemCount) + ".png\""
+
+	# See: https://superuser.com/questions/1283713/create-video-from-images-and-audio-with-varying-image-durations-using-ffmpeg
+	outputWav.export("temp" + os.sep + "audio.wav", format="wav")
+	ffmpegCommand = ffmpegCommand + " -i temp" + os.sep + "audio.wav -filter_complex \"concat=n=" + str(itemCount) + "\" -shortest -c:v libx264 -pix_fmt yuv420p -c:a aac \"" + rootFolder + os.sep + "slideshow.mp4\""
+	print(ffmpegCommand)
+	#os.system(ffmpegCommand)
+
+	shutil.rmtree("temp")
 
 #outputHandle = open(rootFolder + os.sep + "interior.md","w")
 #outputHandle.close()
