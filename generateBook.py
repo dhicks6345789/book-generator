@@ -45,6 +45,13 @@ if "transition.wav" in items:
 	items.remove("transition.wav")
 	audioTransition = "transition.wav"
 
+if "Front Page.png" in items:
+	items.remove("Front Page.png")
+	imageFiles.append("Front Page.png")
+if "Front Page.wav" in items:
+	items.remove("Front Page.wav")
+	audioFiles.append("Front Page.wav")
+
 # Sort through the items in the input folder, creating (ordered) lists as we go of media to include in different versions of this book.
 while not items == []:
 	pageItem = "Page " + str(page)
